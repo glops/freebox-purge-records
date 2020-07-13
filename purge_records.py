@@ -4,14 +4,19 @@ import logging
 from logging.handlers import RotatingFileHandler
 from PurgeRecords import PurgeRecords
 from pathlib import Path
+import os
 
 
 if __name__ == "__main__":
-    Path("log").mkdir(exist_ok=True)
+    scriptPath = Path(os.path.dirname(os.path.realpath(__file__)))
+
+    logPath = scriptPath / "log"
+
+    logPath.mkdir(exist_ok=True)
     logging.basicConfig(
         handlers=[
             RotatingFileHandler(
-                "./log/purgeRecords.log", maxBytes=1000000, backupCount=10
+                logPath / "purgeRecords.log", maxBytes=1000000, backupCount=10
             ),
             logging.StreamHandler(),
         ],
@@ -37,5 +42,5 @@ if __name__ == "__main__":
     args = parser.parse_args()
     if args.simulation:
         logging.info(f"Simulation mode")
-    purgeRecords = PurgeRecords(args.simulation)
+    purgeRecords = PurgeRecords(args.simulation, scriptPath)
     purgeRecords.getRecords()

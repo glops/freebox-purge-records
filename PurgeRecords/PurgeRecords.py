@@ -13,11 +13,11 @@ import logging
 
 
 class PurgeRecords(object):
-    def __init__(self, simulation: bool) -> None:
+    def __init__(self, simulation: bool, scriptPath: Path) -> None:
         self.simulation = simulation
         self.baseUrl = "http://mafreebox.freebox.fr/api/v5/"
 
-        self.confPath = Path("conf")
+        self.confPath = scriptPath / "conf"
         self.confPath.mkdir(exist_ok=True)
         self.appTokenPath = self.confPath / "app_token.json"
         self.sessionTokenPath = self.confPath / "session_token.txt"
