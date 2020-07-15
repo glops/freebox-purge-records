@@ -20,7 +20,7 @@ Ajouter un nom secondaire à l'enregistrement de la forme : 'suppression : n jou
 
 Le nom secondaire peut-être ajouter dans le générateur, ou directement sur l'enregistrement terminé.
 
-![Modifier un générateur](img\generator.png)
+![Modifier un générateur](https://github.com/glops/freebox-purge-records/blob/master/img/generator.png?raw=true)
 
 
 # Exécution
