@@ -23,11 +23,12 @@ class PurgeRecords(object):
         self.sessionTokenPath = self.confPath / "session_token.txt"
         self.sessionToken: Optional[str] = None
         self.logger = logging.getLogger(__name__)
+        self.appId = 'RecordsPurger'
 
     def requestAppToken(self):
         data = {
-            "app_id": "test1234",
-            "app_name": "RecordsPurger",
+            "app_id": self.appId,
+            "app_name": self.appId,
             "app_version": "0.0.1",
             "device_name": "PC",
         }
@@ -49,12 +50,12 @@ class PurgeRecords(object):
                 or i == maxRetries - 1
             ):
                 self.logger.error(
-                    "Cannot get Authorization. Did you press ok on the Freebox ?"
+                    "Impossible d'obtenur l'autorisation. Avez-vous appuyé sur OK sur la Freebox ?"
                 )
                 exit(1)
 
             self.logger.debug(
-                "Waiting for authorization. Please press OK on the Freebox"
+                "En attente de l'autorisation. Merci d'appuyer sur OK sur la Freebox"
             )
             sleep(2)
 
@@ -70,7 +71,7 @@ class PurgeRecords(object):
             app_token = token.get("result").get("app_token")
 
             if app_token is None:
-                self.logger.error("Error retrieving app_token")
+                self.logger.error("Erreur lors de la récupération du token")
                 exit(1)
 
             r = requests.get(self.baseUrl + "login/")
@@ -79,7 +80,7 @@ class PurgeRecords(object):
             challenge = res.get("result").get("challenge")
 
             if challenge is None:
-                self.logger.error("Error retrieving challenge")
+                self.logger.error("Erreur lors de la récupération du challenge")
                 exit(1)
 
             h = hmac.new(
@@ -87,7 +88,7 @@ class PurgeRecords(object):
             )
             password = h.hexdigest()
 
-            data = {"app_id": "test1234", "password": password}
+            data = {"app_id": self.appId, "password": password}
 
             r = requests.post(self.baseUrl + "login/session/", json=data)
 
@@ -96,7 +97,7 @@ class PurgeRecords(object):
             self.sessionToken = res.get("result").get("session_token")
 
             if self.sessionToken is None:
-                self.logger.error("Error retrieving session_token")
+                self.logger.error("Erreur lors de la récupération du token")
                 exit(1)
 
             with self.sessionTokenPath.open(mode="w") as f2:
@@ -183,23 +184,21 @@ class PurgeRecords(object):
                 else:
                     rd = relativedelta(days=number)
 
-                self.logger.debug(f"{rd}")
-                self.logger.debug(f"{end + rd}")
-                self.logger.debug(f"{datetime.now()}")
                 if end + rd < datetime.now():
                     if not self.simulation:
                         self.deleteRecord(id)
                     else:
-                        self.logger.info(f"Would delete record {id} - Simulation mode")
+                        self.logger.info(f"L'enregistrement {id} serait supprimé - mode simulation")
                 else:
-                    self.logger.debug("Do not delete yet")
+                    self.logger.debug("Ne pas supprimer pour le moment")
+                    self.logger.debug(f"Sera supprimé après {end + rd}")
             else:
-                self.logger.debug("No delete instruction")
+                self.logger.debug("Pas d'instruction de suppression")
 
     def deleteRecord(self, id: int):
         sessionToken = self.getSessionToken()
 
         headers = {"X-Fbx-App-Auth": sessionToken}
         self.req(f"pvr/finished/{id}", headers=headers, method="DELETE")
-        self.logger.info(f"Record {id} deleted")
+        self.logger.info(f"Enregistrement {id} supprimé")
 

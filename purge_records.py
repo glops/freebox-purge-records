@@ -26,13 +26,18 @@ if __name__ == "__main__":
         datefmt="%Y-%m-%dT%H:%M:%S",
     )
 
+    # Set logging level for urllib3 to warning
+    loggerUrllib3 = logging.getLogger("urllib3")
+    loggerUrllib3.setLevel(logging.WARNING)
+
     parser = argparse.ArgumentParser(formatter_class=RawTextHelpFormatter)
     parser.description = (
         ""
         "Script pour automatiser la suppression des enregistrements sur la Freebox.\n"
         "1/ Ajouter un nom secondaire à l'enregistrement de la forme : 'suppression : n jours|semaines|mois'\n"
-        "   Le nom secondaire peut-être ajouter dans le générateur, ou directement sur l'enregistrement"
-        "2/ "
+        "   Le nom secondaire peut-être ajouter dans le générateur, ou directement sur l'enregistrement\n"
+        "2/ Exécuter ce script. La 1ère fois, appuyer sur le bouton OK sur l'écran de la Freebox\n"
+        "   pour autoriser l'application."
     )
     parser.add_argument(
         "--simulation",
