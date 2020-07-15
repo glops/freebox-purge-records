@@ -23,7 +23,7 @@ class PurgeRecords(object):
         self.sessionTokenPath = self.confPath / "session_token.txt"
         self.sessionToken: Optional[str] = None
         self.logger = logging.getLogger(__name__)
-        self.appId = 'RecordsPurger'
+        self.appId = "RecordsPurger"
 
     def requestAppToken(self):
         data = {
@@ -45,18 +45,11 @@ class PurgeRecords(object):
             if res2.get("result").get("status") == "granted":
                 self.logger.info("Authorization granted")
                 break
-            elif (
-                res2.get("result").get("status") in ["timeout", "denied", "unknown"]
-                or i == maxRetries - 1
-            ):
-                self.logger.error(
-                    "Impossible d'obtenur l'autorisation. Avez-vous appuyé sur OK sur la Freebox ?"
-                )
+            elif res2.get("result").get("status") in ["timeout", "denied", "unknown"] or i == maxRetries - 1:
+                self.logger.error("Impossible d'obtenur l'autorisation. Avez-vous appuyé sur OK sur la Freebox ?")
                 exit(1)
 
-            self.logger.debug(
-                "En attente de l'autorisation. Merci d'appuyer sur OK sur la Freebox"
-            )
+            self.logger.debug("En attente de l'autorisation. Merci d'appuyer sur OK sur la Freebox")
             sleep(2)
 
         with self.appTokenPath.open(mode="w") as f:
@@ -83,9 +76,7 @@ class PurgeRecords(object):
                 self.logger.error("Erreur lors de la récupération du challenge")
                 exit(1)
 
-            h = hmac.new(
-                str(app_token).encode("utf8"), str(challenge).encode("utf8"), sha1
-            )
+            h = hmac.new(str(app_token).encode("utf8"), str(challenge).encode("utf8"), sha1)
             password = h.hexdigest()
 
             data = {"app_id": self.appId, "password": password}
@@ -112,11 +103,7 @@ class PurgeRecords(object):
         return self.sessionToken
 
     def req(
-        self,
-        url: str,
-        headers: Optional[Dict] = None,
-        json: Optional[Any] = None,
-        method=None,
+        self, url: str, headers: Optional[Dict] = None, json: Optional[Any] = None, method=None,
     ):
 
         if method == None and json is None:
@@ -156,8 +143,7 @@ class PurgeRecords(object):
             self.logger.debug(f"end: {end}")
 
             reg = re.compile(
-                r"(delete|suppression)\s*:\s*([0-9]+)\s*(day|month|week|jour|mois|semaine)s?",
-                flags=re.I,
+                r"(delete|suppression)\s*:\s*([0-9]+)\s*(day|month|week|jour|mois|semaine)s?", flags=re.I,
             )
 
             m = reg.match(subname)

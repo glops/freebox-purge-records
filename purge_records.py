@@ -15,9 +15,7 @@ if __name__ == "__main__":
     logPath.mkdir(exist_ok=True)
     logging.basicConfig(
         handlers=[
-            RotatingFileHandler(
-                logPath / "purgeRecords.log", maxBytes=1000000, backupCount=10
-            ),
+            RotatingFileHandler(logPath / "purgeRecords.log", maxBytes=1000000, backupCount=10),
             logging.StreamHandler(),
         ],
         level=logging.DEBUG,
@@ -40,9 +38,7 @@ if __name__ == "__main__":
         "   pour autoriser l'application."
     )
     parser.add_argument(
-        "--simulation",
-        help="Mode simulation, ne supprime pas les fichiers",
-        action="store_true",
+        "--simulation", help="Mode simulation, ne supprime pas les fichiers", action="store_true",
     )
     args = parser.parse_args()
     if args.simulation:
